@@ -1,0 +1,46 @@
+{
+    "name": "latexpdf-mcp",
+    "version": "0.5.5",
+    "description": "MCP server creating a PDF from LaTeX source code",
+    "main": "dist/index.js",
+    "license": "MIT",
+    "author": "Ihor Sokoliuk (https://github.com/tobioffice)",
+    "homepage": "https://github.com/ihor-sokoliuk/latexpdf-mcp",
+    "bugs": "https://github.com/ihor-sokoliuk/latexpdf-mcp/issues",
+    "keywords": [
+        "mcp",
+        "modelcontextprotocol",
+        "latex",
+        "pdf",
+        "document",
+        "ai",
+        "pagination",
+        "smithery",
+        "url-reader"
+    ],
+    "type": "module",
+    "bin": {
+        "latexpdf-mcp": "dist/index.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
+    "scripts": {
+        "build": "tsc && shx chmod +x dist/*.js",
+        "prepare": "pnpm run build",
+        "watch": "tsc --watch",
+        "postversion": "node scripts/update-version.js"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "1.10.1",
+        "node-html-markdown": "^1.3.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.14.1",
+        "shx": "^0.4.0",
+        "typescript": "^5.8.3"
+    }
+}
