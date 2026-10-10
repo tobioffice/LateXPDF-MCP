@@ -1,64 +1,51 @@
 # LaTeX PDF MCP Server
 
-A Model Context Protocol (MCP) server that provides tools for converting LaTeX source code into PDF documents. This server enables AI assistants to generate high-quality PDF documents from LaTeX markup with professional formatting capabilities.
+[![MCP](https://img.shields.io/badge/MCP-compatible-6E56CF)](https://modelcontextprotocol.io)
+
+A [Model Context Protocol](https://modelcontextprotocol.io) server that converts LaTeX source code into PDF documents using a local LaTeX distribution. It lets AI assistants generate professional, typeset PDFs - academic papers, reports, resumes - from LaTeX markup.
 
 ## Features
 
-- **LaTeX to PDF Conversion**: Convert LaTeX source code directly to PDF format
-- **Professional Document Generation**: Supports all standard LaTeX features for academic and professional documents
-- **Local File Generation**: Creates PDF files in a specified directory for easy access
-- **HTTP Server Integration**: Generates downloadable links for created PDFs
-- **Error Handling**: Comprehensive error reporting for LaTeX compilation issues
+- **LaTeX to PDF conversion** via `latexmk -pdf`
+- **Full LaTeX support**: math, tables, figures, bibliographies, cross-references
+- **Configurable output directory** through `LATEXPDF_OUTPUT_DIR`
+- **Download links** for generated PDFs (served over local HTTP)
+- **Detailed error reporting** for LaTeX compilation failures
 
 ## Prerequisites
 
-Before using this MCP server, ensure you have:
-
-1. **Node.js** (version 18 or higher)
-2. **LaTeX Distribution**: A complete LaTeX installation such as:
-   - **Windows**: [MiKTeX](https://miktex.org/) or [TeX Live](https://www.tug.org/texlive/)
-   - **macOS**: [MacTeX](https://www.tug.org/mactex/)
-   - **Linux**: TeX Live (install via package manager)
-3. **latexmk**: Usually included with LaTeX distributions
+1. **Node.js** 18 or higher
+2. **A LaTeX distribution** with `latexmk` available on your `PATH`:
+   - Windows: [MiKTeX](https://miktex.org/) or [TeX Live](https://www.tug.org/texlive/)
+   - macOS: [MacTeX](https://www.tug.org/mactex/)
+   - Linux: TeX Live (e.g. the `texlive-full` package)
 
 ## Installation
 
-### From npm (Recommended)
+### From npm
 
 ```bash
 npm install -g latexpdf-mcp
 ```
 
-### From Source
-
-1. Clone the repository:
+### From source
 
 ```bash
-git clone https://github.com/ihor-sokoliuk/latexpdf-mcp.git
-cd latexpdf-mcp
-```
-
-2. Install dependencies:
-
-```bash
+git clone https://github.com/tobioffice/LateXPDF-MCP.git
+cd LateXPDF-MCP
 pnpm install
-```
-
-3. Build the project:
-
-```bash
 pnpm run build
 ```
 
 ## Configuration
 
-### Claude Desktop Configuration
+### Claude Desktop
 
-Add the server to your Claude Desktop configuration file:
+Config file locations:
 
-**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Linux**: `~/.config/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Linux: `~/.config/Claude/claude_desktop_config.json`
 
 ```json
 {
@@ -73,60 +60,22 @@ Add the server to your Claude Desktop configuration file:
 }
 ```
 
-### Output Directory
+| Environment variable | Default | Description |
+| --- | --- | --- |
+| `LATEXPDF_OUTPUT_DIR` | `C:\Users\Admin\Documents\GeneratedPDF` | Directory where the generated `.tex` and `.pdf` files are written |
 
-By default, PDFs are generated in: `C:\Users\Admin\Documents\GeneratedPDF`
-
-You can customize the output directory by setting the `LATEXPDF_OUTPUT_DIR` environment variable in your MCP configuration.
-
-**Example configurations:**
-
-**Windows:**
-
-```json
-{
-  "mcpServers": {
-    "latexpdf-mcp": {
-      "command": "latexpdf-mcp",
-      "env": {
-        "LATEXPDF_OUTPUT_DIR": "C:\\Users\\YourName\\Documents\\MyPDFs"
-      }
-    }
-  }
-}
-```
-
-**macOS/Linux:**
-
-```json
-{
-  "mcpServers": {
-    "latexpdf-mcp": {
-      "command": "latexpdf-mcp",
-      "env": {
-        "LATEXPDF_OUTPUT_DIR": "/home/yourname/Documents/PDFs"
-      }
-    }
-  }
-}
-```
+Always set `LATEXPDF_OUTPUT_DIR` to a directory that exists on your machine. When using Windows paths in JSON, escape the backslashes (`C:\\Users\\YourName\\PDFs`).
 
 ## Usage
 
-Once configured, you can use the server through your MCP-compatible client:
+### Tool: `create_pdf`
 
-### Available Tools
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `file_name` | string | yes | Output file name, must end with `.pdf` |
+| `latex_source` | string | yes | LaTeX source code to compile |
 
-#### `create_pdf`
-
-Converts LaTeX source code into a PDF document.
-
-**Parameters:**
-
-- `file_name` (string, required): Name of the output PDF file (must end with .pdf)
-- `latex_source` (string, required): LaTeX source code to convert
-
-**Example:**
+Example LaTeX source:
 
 ```latex
 \documentclass{article}
@@ -143,98 +92,59 @@ This is a sample LaTeX document generated via MCP.
 
 \subsection{Features}
 \begin{itemize}
-    \item Professional formatting
-    \item Mathematical expressions: $E = mc^2$
-    \item Cross-references and citations
+  \item Professional formatting
+  \item Mathematical expressions: $E = mc^2$
+  \item Cross-references and citations
 \end{itemize}
 
 \end{document}
 ```
 
-## PDF Access
+The tool returns the output file name and a download link:
 
-After generating a PDF, you can access it via HTTP server:
+```text
+File Name: report.pdf
 
-1. Navigate to the output directory (default: `C:\Users\Admin\Documents\GeneratedPDF`, or your custom `LATEXPDF_OUTPUT_DIR`):
-
-```bash
-cd [YOUR_OUTPUT_DIRECTORY]
+PDF Download LINK: http://localhost:8000/report.pdf
 ```
 
-2. Start a local HTTP server:
+### Accessing generated PDFs
+
+Serve the output directory over HTTP and open the link:
 
 ```bash
-python -m http.server
+python -m http.server 8000 --directory "$LATEXPDF_OUTPUT_DIR"
 ```
-
-3. Access your PDFs at `http://localhost:8000/[filename].pdf`
-
-The server automatically provides download links in this format when PDFs are generated.
 
 ## Development
 
-### Project Structure
-
+```bash
+pnpm run build   # compile TypeScript to dist/
+pnpm run watch   # compile in watch mode
 ```
-latexpdf-mcp/
-├── index.ts              # Main server implementation
+
+### Project structure
+
+```text
+LateXPDF-MCP/
+├── index.ts              # MCP server implementation
 ├── package.json          # Package configuration
 ├── tsconfig.json         # TypeScript configuration
-├── pnpm-lock.yaml        # Dependency lock file
-└── dist/                 # Compiled JavaScript output
-```
-
-### Building
-
-```bash
-pnpm run build
-```
-
-### Development Mode
-
-```bash
-pnpm run watch
+└── scripts/
+    └── update-version.js # Syncs the version string in index.ts
 ```
 
 ## Troubleshooting
 
-### Common Issues
+- **`latexmk` not found** - make sure your LaTeX distribution is installed and on your `PATH`
+- **Permission errors** - check write access to `LATEXPDF_OUTPUT_DIR`
+- **Compilation failed / no output PDF** - check the LaTeX source for errors and missing packages
+- **Invalid input** - `file_name` must end with `.pdf`
 
-1. **LaTeX not found**: Ensure LaTeX is properly installed and `latexmk` is in your PATH
-2. **Permission errors**: Check write permissions for the output directory
-3. **Compilation errors**: Review LaTeX syntax and required packages
+## Acknowledgments
 
-### Error Messages
-
-The server provides detailed error messages for:
-
-- Missing LaTeX installation
-- Compilation failures
-- File system permissions
-- Invalid input parameters
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+Based on [latexpdf-mcp](https://github.com/ihor-sokoliuk/latexpdf-mcp) by Ihor Sokoliuk.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Links
-
-- **Repository**: [https://github.com/ihor-sokoliuk/latexpdf-mcp](https://github.com/ihor-sokoliuk/latexpdf-mcp)
-- **Issues**: [https://github.com/ihor-sokoliuk/latexpdf-mcp/issues](https://github.com/ihor-sokoliuk/latexpdf-mcp/issues)
-- **Model Context Protocol**: [https://modelcontextprotocol.io](https://modelcontextprotocol.io)
-
-## Author
-
-**Ihor Sokoliuk** - [GitHub Profile](https://github.com/tobioffice)
-
----
-
-_This MCP server enables seamless LaTeX to PDF conversion within AI-assisted workflows, perfect for generating academic papers, technical documentation, and professional reports._
+MIT (as declared in `package.json`).
