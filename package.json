@@ -4,9 +4,9 @@
     "description": "MCP server creating a PDF from LaTeX source code",
     "main": "dist/index.js",
     "license": "MIT",
-    "author": "Ihor Sokoliuk (https://github.com/tobioffice)",
-    "homepage": "https://github.com/ihor-sokoliuk/latexpdf-mcp",
-    "bugs": "https://github.com/ihor-sokoliuk/latexpdf-mcp/issues",
+    "author": "Murali Aggipothu (https://github.com/tobioffice)",
+    "homepage": "https://github.com/tobioffice/LateXPDF-MCP",
+    "bugs": "https://github.com/tobioffice/LateXPDF-MCP/issues",
     "keywords": [
         "mcp",
         "modelcontextprotocol",
