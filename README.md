@@ -141,10 +141,6 @@ LateXPDF-MCP/
 - **Compilation failed / no output PDF** - check the LaTeX source for errors and missing packages
 - **Invalid input** - `file_name` must end with `.pdf`
 
-## Acknowledgments
-
-Based on [latexpdf-mcp](https://github.com/ihor-sokoliuk/latexpdf-mcp) by Ihor Sokoliuk.
-
 ## License
 
 MIT (as declared in `package.json`).
